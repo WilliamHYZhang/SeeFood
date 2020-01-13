@@ -42,7 +42,7 @@ Setup for this project is not bad at all.
  ````
  
 5. Specify that we are using the camera with module `camera2` in the `AndroidManifest.xml` file.
-```kotlin
+```xml
     <uses-feature android:name="android.hardware.camera2"/>
     <uses-permission android:name="android.permission.CAMERA"/>
 ```
