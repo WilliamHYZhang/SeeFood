@@ -41,7 +41,13 @@ Setup for this project is not bad at all.
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
  ````
  
-5. Resync the project
+5. Specify that we are using the camera with module `camera2` in the `AndroidManifest.xml` file.
+```kotlin
+    <uses-feature android:name="android.hardware.camera2"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+```
+
+6. Resync the project
 
 ## UI
 
