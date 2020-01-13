@@ -370,7 +370,7 @@ SEEFOOD V2: life, the universe, and everything food
         resetButton.visibility = View.VISIBLE
         foodEvaluationText.visibility = View.VISIBLE
 ```
-Now that's better, haha. Pretty simple logic statements.
+Now that's better, haha. Pretty simple logic statements. In essence we just compare to the foods in the COCO dataset that the model was pretrained on.
 
 7. Finally comes a slew of camera helper functions. Be prepared!
 
@@ -400,5 +400,73 @@ First off, we need to find the camera. We'd like the back facing one, thanks. To
         }
 ```
 
-To be continued... :)
+The opposite of opening the camera (closing it) is covered by our `closeCamera` function. We close both the camera capture session as well as the camera itself.
+```kotlin
+    private fun closeCamera() {
+        if (cameraCaptureSession != null) {
+            cameraCaptureSession?.close()
+            cameraCaptureSession = null
+        }
+        if (camera != null) {
+            camera?.close()
+            camera = null
+        }
+    }
+```
 
+Next, we have to create a preview session for our `TextureView` (where the camera image will go). To do this, we can request the camera to create a capture, pass in the surface captured, and set a repeating request so that the image will continously update with our `backgroundHandler`.
+```kotlin
+    private fun createPreviewSession() {
+        val texture = cameraPreview!!.surfaceTexture
+        val surface = Surface(texture)
+        val captureRequestBuilder = camera!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+        captureRequestBuilder.addTarget(surface)
+        
+        camera!!.createCaptureSession(listOf(surface), object : CameraCaptureSession.StateCallback() {
+            override fun onConfigureFailed(session: CameraCaptureSession) = Unit
+            override fun onConfigured(session: CameraCaptureSession) {
+                if (camera == null) {
+                    return
+                }
+                val captureRequest = captureRequestBuilder.build()
+                cameraCaptureSession = session
+                session.setRepeatingRequest(captureRequest, null, backgroundHandler)
+            }
+        }, backgroundHandler)
+    }
+```
+
+We also have to create our listener for the `TextureView` state changes. More specifically, we'd like to call `findAndOpenCamera()` once the surface texture becomes avaliable. The other functions are simply there to conform to the protocol.
+```kotlin
+    private val surfaceTextureListener = object : TextureView.SurfaceTextureListener {
+        override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) = Unit
+        override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) = Unit
+        override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?) = true
+        override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
+            findAndOpenCamera()
+        }
+    }
+```
+
+And finally, we need to deal with our `cameraStateCallback`. We'd like to create the preview session when the camera is opened, and when it is disconnected or an error occues we will close the camera.
+```kotlin
+    private val cameraStateCallback = object : CameraDevice.StateCallback() {
+        override fun onOpened(camera: CameraDevice) {
+            this@MainActivity.camera = camera
+            createPreviewSession()
+        }
+        override fun onDisconnected(camera: CameraDevice) {
+            this@MainActivity.camera?.close()
+        }
+        override fun onError(camera: CameraDevice, error: Int) {
+            this@MainActivity.camera?.close()
+            this@MainActivity.camera = null
+        }
+    }
+```
+
+## Conclusion
+
+With that, we should be up and running with our working SeeFood app! We can either run our app natively in on an Android device, or with an emulator that uses the computer webcam as the rear-facing camera. Make sure to give the app permission to access the camera when it asks, and have fun testing it out!
+
+If you're having any trouble getting it to work, feel free to open up an issue or reach out via email, I would be happy to help.
