@@ -472,6 +472,10 @@ And finally, we need to deal with our `cameraStateCallback`. We'd like to create
     }
 ```
 
+## References
+- [TFLite Example](https://github.com/tensorflow/examples/tree/master/lite/examples/object_detection/android)
+- [Camera Logic](https://android.jlelse.eu/the-least-you-can-do-with-camera2-api-2971c8c81b8b)
+
 ## Conclusion
 
 With that, we should be up and running with our working SeeFood app! We can either run our app natively in on an Android device, or with an emulator that uses the computer webcam as the rear-facing camera. Make sure to give the app permission to access the camera when it asks, and have fun testing it out!
