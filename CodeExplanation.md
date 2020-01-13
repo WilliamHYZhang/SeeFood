@@ -245,7 +245,7 @@ First, we'll add some `private val`s that we'll use when running with TFLite.
     private val pixels = IntArray(300 * 300)
     private val labels = Vector<String>()
 ```
-We'll obviously need our `tflite` interpreter, `imageData` as a `ByteBuffer` to work with our image, `assetManager` to read in files, and `pixels` and `labels` for storing the image and labels.
+We'll obviously need our `tflite` interpreter, `imageData` as a `ByteBuffer` to work with our image, `assetManager` to read in files, and `pixels` and `labels` for storing the image and labels. Remember the TFLite model downloaded in the prereqs? Now would be the time to extract that file and put both the .tflite model file and labels.txt file in the `assets` folder. (Full path is `SeeFood/app/src/main/assets` so that we can access it with Android Studio.
 
 Then, in the `init` function we'll start with converting our image. Let's read in our TFLite model through at `ByteBuffer` and label files adding them to a `Vector`.
 ```kotlin
@@ -262,6 +262,7 @@ Then, in the `init` function we'll start with converting our image. Let's read i
             labels.add(line)
         }
 ```
+
 Note that we have to allocate for a size of 300 * 300 * 3, the image size and 3 for the RGB color.
 
 Lastly is the `foodEvaluation` function. 
